@@ -1,7 +1,6 @@
 services:
   superset:
     image: apache/superset:latest
-    container_name: superset
     ports:
       - "8088:8088"
     environment:
@@ -18,9 +17,11 @@ services:
       - ./superset_config.py:/app/pythonpath/superset_config.py
       - ./init_superset.sh:/app/init_superset.sh
     command: ["/bin/sh", "-c", "/app/init_superset.sh && superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger"]
+    networks:
+      - dokploy-network
 
   postgres:
-    image: postgres:12
+    image: postgres:17.5-alpine3.21
     environment:
       POSTGRES_DB: superset
       POSTGRES_USER: superset
@@ -30,3 +31,6 @@ services:
 
 volumes:
   postgres_data:
+networks:
+  dokploy-network:
+    driver: bridge
